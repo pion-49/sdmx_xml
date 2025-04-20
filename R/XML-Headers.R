@@ -1,10 +1,14 @@
 #' @export
 
-create_header <- function(sdmx, xml) {
+create_header <- function(sdmx = new("SDMXHeader"), xml, lite = TRUE) {
   # Check is CLass "SDMXHeader"
   if(!is(sdmx,"SDMXHeader")) { stop("Input 'sdmx' is not of Class 'SDMXHeader'.")}
   # Check is xml2 doc
   if(!is(xml,"xml_document")) { stop("Input 'xml' is not a XML docuemnt.")}
+  # Check if doc already contains header
+  if(length(xml2::xml_find_all(xml, xpath = "Header")) != 0) { stop("XML document already contains a header.")}
+  # Check if lite is logical
+  if(!is(lite, "logical")) { stop("Input 'lite' must be a logical.")}
   
   # Add header node below root
   xml2::xml_add_child(.x = xml, .value = "Header")
@@ -28,27 +32,7 @@ create_header <- function(sdmx, xml) {
     .value = "Test",
     sdmx@Test
   )
-
-  # Add truncated (logical) node below header
-  xml2::xml_add_child(
-    .x = xml2::xml_find_first(
-      x = xml,
-      xpath = "Header"
-    ),
-    .value = "truncated",
-    sdmx@truncated
-  )
-
-  # Add name (character) node below header
-  xml2::xml_add_child(
-    .x = xml2::xml_find_first(
-      x = xml,
-      xpath = "Header"
-    ),
-    .value = "Name",
-    sdmx@Name
-  )
-
+  
   # Add Sender (list) node below header
   xml2::xml_add_child(
     .x = xml2::xml_find_first(
@@ -56,9 +40,10 @@ create_header <- function(sdmx, xml) {
       xpath = "Header"
     ),
     .value = "Sender",
-    sdmx@Sender
+    id = sdmx@Sender$id,
+    sdmx@Sender$en
   )
-
+  
   # Add receiver (list) node below header
   xml2::xml_add_child(
     .x = xml2::xml_find_first(
@@ -66,9 +51,10 @@ create_header <- function(sdmx, xml) {
       xpath = "Header"
     ),
     .value = "Receiver",
-    sdmx@Receiver
+    id = sdmx@Receiver$id,
+    sdmx@Receiver$en
   )
-
+  
   # Add Prepared (POSIXlt) node below header
   xml2::xml_add_child(
     .x = xml2::xml_find_first(
@@ -76,48 +62,71 @@ create_header <- function(sdmx, xml) {
       xpath = "Header"
     ),
     .value = "Prepared",
-    sdmx@Prepared
+    as.character(sdmx@Prepared)
   )
+  
+  if(!lite) {
 
-  # Add Extracted (POSIXlt) node below header
-  xml2::xml_add_child(
-    .x = xml2::xml_find_first(
-      x = xml,
-      xpath = "Header"
-    ),
-    .value = "Extracted",
-    sdmx@Extracted
-  )
-
-  # Add ReportingBegin (POSIXlt) node below header
-  xml2::xml_add_child(
-    .x = xml2::xml_find_first(
-      x = xml,
-      xpath = "Header"
-    ),
-    .value = "ReportingBegin",
-    sdmx@ReportingBegin
-  )
-
-  # Add ReportingEnd (POSIXlt) node below header
-  xml2::xml_add_child(
-    .x = xml2::xml_find_first(
-      x = xml,
-      xpath = "Header"
-    ),
-    .value = "ReportingEnd",
-    sdmx@ReportingEnd
-  )
-
-  # Add Source (character) node below header
-  xml2::xml_add_child(
-    .x = xml2::xml_find_first(
-      x = xml,
-      xpath = "Header"
-    ),
-    .value = "Source",
-    sdmx@Source
-  )
+    # Add truncated (logical) node below header
+    xml2::xml_add_child(
+      .x = xml2::xml_find_first(
+        x = xml,
+        xpath = "Header"
+      ),
+      .value = "Truncated",
+      sdmx@Truncated
+    )
+  
+    # Add name (character) node below header
+    xml2::xml_add_child(
+      .x = xml2::xml_find_first(
+        x = xml,
+        xpath = "Header"
+      ),
+      .value = "Name",
+      sdmx@Name
+    )
+  
+    # Add Extracted (POSIXlt) node below header
+    xml2::xml_add_child(
+      .x = xml2::xml_find_first(
+        x = xml,
+        xpath = "Header"
+      ),
+      .value = "Extracted",
+      as.character(sdmx@Extracted)
+    )
+  
+    # Add ReportingBegin (POSIXlt) node below header
+    xml2::xml_add_child(
+      .x = xml2::xml_find_first(
+        x = xml,
+        xpath = "Header"
+      ),
+      .value = "ReportingBegin",
+      as.character(sdmx@ReportingBegin)
+    )
+  
+    # Add ReportingEnd (POSIXlt) node below header
+    xml2::xml_add_child(
+      .x = xml2::xml_find_first(
+        x = xml,
+        xpath = "Header"
+      ),
+      .value = "ReportingEnd",
+      as.character(sdmx@ReportingEnd)
+    )
+  
+    # Add Source (character) node below header
+    xml2::xml_add_child(
+      .x = xml2::xml_find_first(
+        x = xml,
+        xpath = "Header"
+      ),
+      .value = "Source",
+      sdmx@Source
+    )
+  }
   
   return(xml)
 }

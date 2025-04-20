@@ -8,6 +8,10 @@ head = new("SDMXHeader",
            Prepared = as.POSIXlt(Sys.time()),
            Extracted = as.POSIXlt(Sys.time()),
            ReportingBegin = as.POSIXlt(Sys.time()),
-           ReportingEnd = as.POSIXlt(Sys.time()),
+           ReportingEnd = as.POSIXlt(Sys.time())
            Source = "source"
 )
+
+y = create_header(head, XMLNewDoc(), TRUE)
+
+write_xml(y, file = "~/Development/test_xml.xml", options = "as_xml", encoding = "UTF-8")
